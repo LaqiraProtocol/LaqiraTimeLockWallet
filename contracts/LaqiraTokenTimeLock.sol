@@ -24,7 +24,8 @@ contract LaqiraTokenTimeLock is Ownable {
     
     IBEP20 private immutable _token;
     
-    constructor(IBEP20 token_, uint256 _period, uint256 periodicReleaseNum_) {
+    constructor(address _owner, IBEP20 token_, uint256 _period, uint256 periodicReleaseNum_) {
+        _transferOwnership(_owner);
         _token = token_;
         creationTime = block.timestamp;
         period = _period;
