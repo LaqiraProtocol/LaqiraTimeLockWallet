@@ -1,2 +1,12 @@
 build
 node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+package-lock.json
+
+#Hardhat files
+cache
+artifacts

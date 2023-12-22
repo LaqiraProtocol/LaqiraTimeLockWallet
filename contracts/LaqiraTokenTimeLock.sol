@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // LaqiraTimeLockWallet, Developed by Laqira Protocol team
 
+import "./Ownable.sol";
+
 pragma solidity ^0.8.0;
 
 interface IBEP20 {
@@ -8,9 +10,7 @@ interface IBEP20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-contract LaqiraTokenTimeLock {
-    address public owner;
-    
+contract LaqiraTokenTimeLock is Ownable {
     uint256 public creationTime;
     
     // Number of tokens which is released after each period.
@@ -25,7 +25,6 @@ contract LaqiraTokenTimeLock {
     IBEP20 private immutable _token;
     
     constructor(IBEP20 token_, uint256 periodicReleaseNum_) {
-        owner = msg.sender;
         _token = token_;
         creationTime = block.timestamp;
         _periodicReleaseNum = periodicReleaseNum_;
@@ -51,17 +50,16 @@ contract LaqiraTokenTimeLock {
     
     function availableTokens() public view returns (uint256) {
         uint256 passedTime = block.timestamp - creationTime;
-        return ((passedTime / period) * _periodicReleaseNum) - _withdrawnTokens;
+        uint256 balance = timeLockWalletBalance();
+        uint256 available = ((passedTime / period) * _periodicReleaseNum) - _withdrawnTokens;
+        if (available > balance)
+            available = balance;
+        return available;
     }
     
     function lockedTokens() public view returns (uint256) {
         uint256 balance = timeLockWalletBalance();
         return balance - availableTokens();
-    }
-    
-    modifier onlyOwner() {
-        require(msg.sender == owner, "caller is not the owner");
-        _;
     }
 
     function timeLockWalletBalance() public view returns (uint256) {
