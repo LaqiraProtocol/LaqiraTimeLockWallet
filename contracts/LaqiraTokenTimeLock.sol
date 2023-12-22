@@ -16,17 +16,18 @@ contract LaqiraTokenTimeLock is Ownable {
     // Number of tokens which is released after each period.
     uint256 private _periodicReleaseNum;
     
-    // Seconds of 6 month, release period is 6 month and all the tokens will be released in 8 periods(8 * 6 month = 4 yaers).
-    uint256 public constant period = 15552000;
+    // Seconds of 6 month is 15552000, release period is usually 6 month and all the tokens will be released in 8 periods(8 * 6 month = 4 yaers).
+    uint256 public immutable period;
     
     // Number of tokens that has been withdrawn already.
     uint256 private _withdrawnTokens;
     
     IBEP20 private immutable _token;
     
-    constructor(IBEP20 token_, uint256 periodicReleaseNum_) {
+    constructor(IBEP20 token_, uint256 _period, uint256 periodicReleaseNum_) {
         _token = token_;
         creationTime = block.timestamp;
+        period = _period;
         _periodicReleaseNum = periodicReleaseNum_;
     }
     
